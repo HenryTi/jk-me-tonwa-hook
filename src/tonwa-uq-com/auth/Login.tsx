@@ -7,7 +7,7 @@ import { BandPassword } from 'tonwa-com';
 import { FormBandTemplate1 } from 'tonwa-com';
 import { Band } from 'tonwa-com';
 import { FormErrors } from 'tonwa-com';
-import { useUqAppBase } from '../UqApp';
+import { useUqApp } from '../UqApp';
 import { Forget, Register } from './register/Register';
 import { getSender } from './tools';
 
@@ -28,7 +28,7 @@ interface Props {
 
 export function Login({ withBack, loginTop, privacy, callback }: Props) {
     let nav = useNav();
-    let uqApp = useUqAppBase();
+    let uqApp = useUqApp();
     let { userApi, guest } = uqApp;
     let onLogin = async (un: string, pwd: string): Promise<boolean> => {
         let user = await userApi.login({

@@ -2,13 +2,13 @@ import { UPage, useNav } from "tonwa-com";
 import { Band } from "tonwa-com";
 import { BandPassword } from "tonwa-com";
 import { Form, FormBandTemplate1, Submit, FormErrors } from "tonwa-com";
-import { useUqAppBase } from "../UqApp";
+import { useUqApp } from "../UqApp";
 
 //type OnChange = (orgPassword: string, newPassword: string) => Promise<boolean>;
 
 export function ChangePassword() {
     let nav = useNav();
-    let uqApp = useUqAppBase()
+    let uqApp = useUqApp()
     let onSubmit = async (data: any): Promise<any> => {
         let { orgPassword, newPassword, newPassword1 } = data;
         if (newPassword !== newPassword1) {

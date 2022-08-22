@@ -2,7 +2,7 @@ import { UPage, useNav } from 'tonwa-com';
 import { Band } from 'tonwa-com';
 import { BandPassword } from 'tonwa-com';
 import { Form, Submit } from 'tonwa-com';
-import { useUqAppBase } from '../../UqApp';
+import { useUqApp } from '../../UqApp';
 import { Pass } from './Pass';
 import { ForgetSuccess, RegisterSuccess } from './Success';
 
@@ -67,7 +67,7 @@ interface RegisterParameter {
 
 export function RegisterPassword({ pass }: { pass: Pass; }) {
     let nav = useNav();
-    let { userApi } = useUqAppBase();
+    let { userApi } = useUqApp();
     let { type, account, verify } = pass;
     let onPasswordSubmit = async (pwd: string): Promise<string> => {
         pass.password = pwd;
@@ -118,7 +118,7 @@ export function RegisterPassword({ pass }: { pass: Pass; }) {
 
 export function ForgetPassword({ pass }: { pass: Pass; }) {
     let nav = useNav();
-    let { userApi } = useUqAppBase();
+    let { userApi } = useUqApp();
     let { account, password, verify, type } = pass;
     let onPasswordSubmit = async (pwd: string): Promise<string> => {
         pass.password = pwd;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { User } from "tonwa-uq";
-import { useUqAppBase } from "../UqApp";
+import { useUqApp } from "../UqApp";
 
 interface Props {
     id: number;
@@ -12,7 +12,7 @@ interface Props {
 const usersCache: { [id: number]: User } = {};
 
 export function UserView({ id, assigned, className, Template }: Props) {
-    let app = useUqAppBase();
+    let app = useUqApp();
     let [user, setUser] = useState<User>(undefined);
     useEffect(() => {
         async function loadUser() {

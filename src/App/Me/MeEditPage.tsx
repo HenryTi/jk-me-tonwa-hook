@@ -1,7 +1,6 @@
-import { useUqApp } from "App/MyUqAppView";
 import { AppLogout } from "App/AppWithTabs/AppImage";
 import { Page, useT, FA, Detail, BandString, Sep, BandCom, useNav } from "tonwa-com";
-import { ChangePassword, UserQuit } from "tonwa-uq-com";
+import { useUqApp, ChangePassword, UserQuit } from "tonwa-uq-com";
 import { useSnapshot } from "valtio";
 import { appT } from '../res';
 import { meT } from "./meRes";

@@ -29,6 +29,7 @@ export abstract class UqApp<U = any> {
     private readonly uqConfigs: UqConfig[];
     private readonly uqsSchema: { [uq: string]: any; };
     private localData: LocalData;
+    private uqRoleNames: { [key: string]: string };
     readonly uqAppBaseId: number;
     readonly net: Net;
     readonly appNav: AppNav;
@@ -67,16 +68,23 @@ export abstract class UqApp<U = any> {
     }
 
     protected abstract get defaultUq(): Uq;
-    setCurrentUnit(userUnit: UserUnit) {
-        this.uqUnit.setCurrentUnit(userUnit);
+    protected get defaultUqRoleNames(): { [lang: string]: any } { return undefined }
+    loginUnit(userUnit: UserUnit) {
+        this.uqUnit.loginUnit(userUnit);
+    }
+    logoutUnit() {
+        this.uqUnit.logoutUnit();
     }
     get userUnit() { return this.uqUnit.userUnit; }
     get me() { return this.responsive.user?.id; }
+    hasRole(role: string[] | string): boolean {
+        if (this.uqUnit === undefined) return false;
+        return this.uqUnit.hasRole(role);
+    }
 
     async logined(user: User) {
         this.net.logoutApis();
         this.responsive.user = user;
-        // this.uqUnit?.reset();
         let autoLoader: Promise<any> = undefined;
         let autoRefresh = new AutoRefresh(this, autoLoader);
         if (user) {
@@ -109,13 +117,7 @@ export abstract class UqApp<U = any> {
     saveLocalData() {
         this.localData.saveToLocalStorage();
     }
-    /*
-    protected onInited(): Promise<void> {
-        return;
-    }
-    */
 
-    //private uqsUserId: number = -1;
     private initCalled = false;
     initErrors: string[];
     init(initPage: React.ReactNode, navigateFunc: NavigateFunction): void {
@@ -133,6 +135,7 @@ export abstract class UqApp<U = any> {
 
             if (this.uqs) {
                 this.uq = this.defaultUq;
+                this.buildRoleNames();
             }
             let user = this.localData.user.get();
             await this.logined(user);
@@ -153,6 +156,22 @@ export abstract class UqApp<U = any> {
             console.error(error);
         }
     }
+
+    private buildRoleNames() {
+        if (this.uq === undefined) return;
+        let defaultUqRoleNames = this.defaultUqRoleNames;
+        if (defaultUqRoleNames !== undefined) {
+            this.uqRoleNames = defaultUqRoleNames[env.lang];
+            if (this.uqRoleNames === undefined) {
+                this.uqRoleNames = defaultUqRoleNames['$'];
+            }
+        }
+        if (this.uqRoleNames === undefined) this.uqRoleNames = {};
+    }
+
+    roleName(role: string): string {
+        return this.uqRoleNames[role] ?? role;
+    }
 }
 
 class LocalStorageDb extends LocalDb {
@@ -168,7 +187,7 @@ class LocalStorageDb extends LocalDb {
 }
 
 export const UqAppContext = React.createContext(undefined);
-export function useUqAppBase<U, T extends UqApp<U> = UqApp<U>>() {
+export function useUqApp<U, T extends UqApp<U> = UqApp<U>>() {
     return useContext<T>(UqAppContext);
 }
 
@@ -195,7 +214,7 @@ export function UqAppView({ uqApp, children }: { uqApp: UqApp; children: ReactNo
             <div>uq app start failed. init errors: </div>
             <ul className="text-danger">
                 {
-                    uqApp.initErrors.map((v, index) => <li key={index}>{v}</li>)
+                    uqApp.initErrors.map((v: string, index: number) => <li key={index}>{v}</li>)
                 }
             </ul>
         </div>;

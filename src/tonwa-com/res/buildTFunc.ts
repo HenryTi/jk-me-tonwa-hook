@@ -1,8 +1,8 @@
 import { env } from "../tools"
 
-export function buildTFunc(res: { [lang: string]: any }) {
+export function buildTFunc<T = string>(res: { [lang: string]: any }) {
     let langRes = res[env.lang];
-    return function (str: string): any {
-        return langRes[str];
+    return function (str: T): string {
+        return langRes[str] ?? str;
     }
 }

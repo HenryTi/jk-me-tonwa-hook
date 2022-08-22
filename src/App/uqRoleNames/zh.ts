@@ -1,6 +1,6 @@
 import { EnumRole, Enumshop } from "uqs/BzUShop";
 
-export const roleItemLables: { [key in (EnumRole | Enumshop)]: string } = {
+export const zh: { [key in (EnumRole | Enumshop)]: string } = {
     [EnumRole.shopmanager]: '店铺总管',
     [Enumshop.product]: '产品经理',
     [Enumshop.delivery]: '发运经理',

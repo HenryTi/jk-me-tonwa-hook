@@ -4,7 +4,7 @@ import { ActsPage } from "./Acts";
 import { Page, PageTabs, Tab, FA, useT } from "tonwa-com";
 import { appT } from "./res";
 import { MeLink } from "./Me";
-import { ShopStartPage } from "./Shop";
+import { PageShops } from "./Shop";
 
 export function MainPage() {
     let t = useT(appT);
@@ -22,7 +22,7 @@ export function MainPage() {
             <ActsPage />
         </Tab>
         <Tab name="shop" tag={<TabTag caption={t('shop')} icon="file-text-o" />}>
-            <ShopStartPage />
+            <PageShops />
         </Tab >
         <Tab name="t2" tag={<TabTag caption={t('me')} icon="circle-o" />}>
             <Page header={t('me')}>

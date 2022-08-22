@@ -15,6 +15,7 @@ export interface UserUnit<T = any> {
     icon: string;
     roles: string[];
     entity: string;
+    addBy: number;
 }
 
 export interface UnitRoles {
@@ -27,24 +28,39 @@ export interface UnitRoles {
 }
 
 export class UqUnit {
+    private readonly uqMan: UqMan;
     private myUnitsColl: { [unit: number]: UserUnit };
-    private uqMan: UqMan;
-    readonly myUnits: UserUnit[];
+    myUnits: UserUnit[];
     userUnit: UserUnit;       // current unit;
+    userUnit0: UserUnit;
 
     constructor(uqMan: UqMan) {
         this.uqMan = uqMan;
-        this.myUnits = [];
     }
 
-    setCurrentUnit(userUnit: UserUnit) {
+    loginUnit(userUnit: UserUnit) {
         this.userUnit = userUnit;
     }
 
-    reset() {
-        this.userUnit = undefined;
-        this.myUnitsColl = undefined;
-        this.myUnits.splice(0);
+    logoutUnit() {
+        this.userUnit = this.userUnit0;
+    }
+
+    hasRole(role: string[] | string) {
+        if (this.userUnit === undefined) return false;
+        let { roles, isAdmin } = this.userUnit;
+        if (isAdmin === true) return true;
+        if (Array.isArray(role) === true) {
+            let arr = role as string[];
+            for (let item of arr) {
+                let ret = roles.indexOf(item) >= 0;
+                if (ret === true) return true;
+            }
+            return false;
+        }
+        else {
+            return roles.indexOf(role as string) >= 0;
+        }
     }
 
     async Poked(): Promise<boolean> {
@@ -57,8 +73,14 @@ export class UqUnit {
         return row["poke"] === 1;
     }
 
-    async loadMyRoles(): Promise<UserUnit[]> {
-        if (this.myUnitsColl !== undefined) return this.myUnits;
+    async reloadMyRoles(): Promise<void> {
+        this.myUnitsColl = undefined;
+        await this.loadMyRoles();
+    }
+
+    async loadMyRoles(): Promise<void> {
+        if (this.myUnitsColl !== undefined) return;
+        this.myUnits = [];
         this.myUnitsColl = {};
         let query: Query = this.uqMan.entities['$role_my'] as any;
         let { admins, roles, unitProps } = await query.query({});
@@ -82,6 +104,9 @@ export class UqUnit {
             myUnit.isOwner = ((admin & 2) === 2);
             myUnit.entity = entity;
             myUnit.assigned = assigned;
+            if (unit === 0) {
+                this.userUnit = this.userUnit0 = myUnit;
+            }
         }
         for (let roleRow of roles) {
             let { unit, role } = roleRow;
@@ -100,7 +125,7 @@ export class UqUnit {
         }
     }
 
-    async loadUnitUsers(/*me: number*/): Promise<UnitRoles> {
+    async loadUnitUsers(): Promise<UnitRoles> {
         let unit = this.userUnit.unit
         //let meOwner: boolean;
         //let meAdmin: boolean;
@@ -178,6 +203,22 @@ export class UqUnit {
             user,
             action,
             role
+        });
+    }
+
+    async quitOwner() {
+        let act: Action = this.uqMan.entities['$role_unit_quit_owner'] as any;
+        await act.submit({
+            unit: this.userUnit.unitId,
+        });
+    }
+
+    async delAdmin(user: number, admin: 1 | 2) {
+        let act: Action = this.uqMan.entities['$role_unit_del_admin'] as any;
+        await act.submit({
+            unit: this.userUnit.unitId,
+            user,
+            admin,
         });
     }
 }

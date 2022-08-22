@@ -1,17 +1,12 @@
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 // import { NavigateFunction } from "react-router-dom";
-import { AppConfig, UqApp, UqAppView, UqAppContext } from "tonwa-uq-com";
+import { AppConfig, UqApp, UqAppView } from "tonwa-uq-com";
 import { Uq, UqConfig } from 'tonwa-uq';
 import { UQs, uqsSchema } from "uqs";
 //import { AppRoutes } from './AppWithTabs';
 import { AppRoutes } from './AppWithPageStack';
 import uqconfigJson from '../uqconfig.json';
-
-class MyUqApp extends UqApp<UQs> {
-    protected get defaultUq(): Uq {
-        return this.uqs.BzUShop;
-    }
-}
+import { uqRoleNames } from './uqRoleNames';
 
 const appConfig: AppConfig = {
     version: '0.1.0',
@@ -42,13 +37,16 @@ function uqConfigsFromJson(json: { devs: { [dev: string]: any }; uqs: any[]; }):
 
 const uqConfigs = uqConfigsFromJson(uqconfigJson);
 
+class MyUqApp extends UqApp<UQs> {
+    protected get defaultUq(): Uq {
+        return this.uqs.BzUShop;
+    }
+    protected get defaultUqRoleNames() { return uqRoleNames; }
+}
+
 export function MyUqAppView() {
     let { current: uqApp } = useRef(new MyUqApp(appConfig, uqConfigs, uqsSchema));
     return <UqAppView uqApp={uqApp}>
         <AppRoutes />
     </UqAppView>
-}
-
-export function useUqApp() {
-    return useContext<UqApp>(UqAppContext);
 }

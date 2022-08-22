@@ -1,12 +1,10 @@
-import { useUqApp } from "App/MyUqAppView";
 import { None } from "App/tool";
 import React, { ReactNode, useState } from "react";
 import { LMR } from "tonwa-com";
 import { UserUnit } from "tonwa-uq";
-import { ListEdit, ListEditContext } from "tonwa-uq-com";
-import { EnumRole, Enumshop } from "uqs/BzUShop";
-import { ButtonAddUser, OnUserChanged } from "../ButtonAddUser";
-import { roleItemLables } from "../roleItemLables";
+import { ListEdit, ListEditContext, useUqApp } from "tonwa-uq-com";
+import { ButtonAddUser } from "../ButtonAddUser";
+import { roleT } from "../res";
 import { ViewUser } from "../ViewUser";
 
 export function ViewRoles({ roleItems, users }: { roleItems: string[], users: UserUnit[] }) {
@@ -43,20 +41,20 @@ export function ViewRoles({ roleItems, users }: { roleItems: string[], users: Us
             </label>;
         }
         let vRoles = <div className="ms-5 mt-2 form-check form-check-inline">{isOwner === true ?
-            <Checked>拥有者</Checked>
+            <Checked>roleT('owner')</Checked>
             : (
                 isAdmin === true ?
-                    <Checked>管理员</Checked>
+                    <Checked>roleT('admin')</Checked>
                     :
-                    roleItems.map(v => (<RoleCheck key={v} caption={roleItemLables[v as (EnumRole | Enumshop)]} roleItem={v} />))
+                    roleItems.map(v => (<RoleCheck key={v} caption={uqApp.roleName(v)} roleItem={v} />))
             )
         }</div>;
         return <div className="px-3 py-2">
-            <ViewUser user={userUnit} onAssignChanged={onAssignChanged} pageHeader="用户" />
+            <ViewUser user={userUnit} onAssignChanged={onAssignChanged} pageHeader={roleT('user')} onAdminChanged={undefined} />
             {vRoles}
         </div >;
     }
-    const onUserChanged: OnUserChanged = async (user: number, action, admin) => {
+    async function onUserAdded(user: number) {
         let assigned: string = undefined;
         let retUser = await uqApp.uqUnit.addUser(user, assigned);
         let { items } = listEditContext;
@@ -78,8 +76,8 @@ export function ViewRoles({ roleItems, users }: { roleItems: string[], users: Us
         <div className="card mt-3 mx-1">
             <div className="card-header pe-0 py-0">
                 <LMR className="align-items-center">
-                    <span>用户</span>
-                    <ButtonAddUser admin="user" onUserChanged={onUserChanged} />
+                    <span>{roleT('user')}</span>
+                    <ButtonAddUser onUserAdded={onUserAdded} />
                 </LMR>
             </div>
             <ListEdit context={listEditContext} ItemView={ItemView} none={<None />} />

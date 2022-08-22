@@ -5,8 +5,7 @@ import { MeEditPage } from "./MeEditPage";
 import { useNav, useT } from "tonwa-com";
 import { appT } from '../res';
 import { meT } from "./meRes";
-import { useUqApp } from "App/MyUqAppView";
-import { Image } from "tonwa-uq-com";
+import { useUqApp, Image } from "tonwa-uq-com";
 import { useSnapshot } from "valtio";
 
 export function MeLink() {

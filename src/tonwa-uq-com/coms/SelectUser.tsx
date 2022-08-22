@@ -1,32 +1,34 @@
 import { useState } from "react";
-import { MutedSmall, Page, SearchBox, useNav } from "tonwa-com";
+import { ButtonAsync, MutedSmall, Page, SearchBox, useNav, wait } from "tonwa-com";
 import { FA } from "tonwa-com";
 import { User } from "tonwa-uq";
-import { useUqAppBase } from "../UqApp";
+import { useUqApp } from "../UqApp";
 import { Image } from "./Image";
 
 interface Props {
     header?: string | JSX.Element;
+    top?: string | JSX.Element;
 }
-export function SelectUser({ header }: Props) {
+export function SelectUser({ header, top }: Props) {
     let nav = useNav();
-    let app = useUqAppBase();
+    let app = useUqApp();
     let [user, setUser] = useState<User>(null);
     let onSearch = async (key: string) => {
         let retUser = await app.userApi.userFromName(key);
         setUser(retUser);
     }
     header = header ?? 'Select user';
+    let cnBorder = "border rounded-3 bg-white p-5 mx-auto w-min-20c";
     let vContent: any;
     if (user === null) {
         vContent = null;
     }
-    if (!user) {
-        vContent = <div><FA name="info-o" className="me-3 text-info" /> No user</div>;
+    else if (!user) {
+        vContent = <div className={cnBorder}><FA name="info-o" className="me-3 text-info" /> No user</div>;
     }
     else {
         let { name, nick, icon } = user;
-        vContent = <>
+        vContent = <div className={cnBorder}>
             <div className="d-flex">
                 <Image src={icon} className="me-4 w-2-5c h-2-5c" />
                 <div>
@@ -35,24 +37,23 @@ export function SelectUser({ header }: Props) {
                 </div>
             </div>
             <div className="text-center mt-5">
-                <button className="btn btn-primary" onClick={() => nav.returnCall(user)}>
+                <ButtonAsync className="btn btn-primary" onClick={() => { nav.returnCall(user); return wait(10000); }}>
                     OK
-                </button>
+                </ButtonAsync>
             </div>
-        </>;
+        </div>;
     }
 
     return <Page header={header} back="close">
         <div className="p-3 d-flex align-items-center flex-column">
+            <div>{top}</div>
             <div className="mx-auto mb-3">
                 <SearchBox className="w-min-20c"
                     onFocus={() => setUser(null)}
                     onSearch={onSearch}
                     placeholder="user account" />
             </div>
-            <div className="border rounded-3 bg-white p-5 mx-auto w-min-20c">
-                {vContent}
-            </div>
+            {vContent}
         </div>
     </Page>;
 }

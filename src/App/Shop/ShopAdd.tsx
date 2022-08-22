@@ -1,7 +1,7 @@
-import { useUqApp } from "App/MyUqAppView";
 import { Page, useNav } from "tonwa-com";
-import { Band, FA, LMR, Submit } from "tonwa-com";
-import { FieldsDetail, FieldsForm, IDListEdit, BandIDNOInput, useIdListEdit } from "tonwa-uq-com";
+import { Band, Submit } from "tonwa-com";
+import { FieldsForm, BandIDNOInput, useUqApp } from "tonwa-uq-com";
+import { UQs } from "uqs";
 import { Shop } from "uqs/BzUShop";
 import { IconCommand } from "../tool";
 
@@ -23,7 +23,7 @@ interface Props {
 
 function ShopAdd({ onAdded }: Props) {
     let nav = useNav();
-    let app = useUqApp();
+    let app = useUqApp<UQs>();
     let { BzUShop } = app.uqs;
     let { Shop } = BzUShop;
     let { fields } = Shop;
