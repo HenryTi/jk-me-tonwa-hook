@@ -130,17 +130,23 @@ export class Net {
     */
     buildUqUrl(db: string, url: string, urlTest: string): string {
         let testOrProd: string;
+        let { uq } = this.hosts;
+        /*
+        if (uq) {
+            url = uq;
+        }
+        else if (urlTest !== '-') {
+            url = urlTest;
+        }
+        */
         if (this.testing === true) {
-            let { uq } = this.hosts;
-            if (uq) {
-                url = uq;
-            }
-            else if (urlTest !== '-') {
-                url = urlTest;
-            }
+            url = urlTest;
             testOrProd = 'test';
         }
         else {
+            if (uq) {
+                url = uq;
+            }
             testOrProd = 'prod';
         }
         if (url.endsWith('/') === false) {

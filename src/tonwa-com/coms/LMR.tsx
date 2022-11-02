@@ -15,21 +15,6 @@ export function LMR(props: Props) {
     if (len > 1) {
         arr.splice(len - 1, 0, <div className="me-auto" />);
     }
-    /*
-    if (len > 1) {
-        let el = arr[len - 2];
-        let elNew: any;
-        if (typeof el === 'string') {
-            elNew = <div className="flex-grow-1">{el}</div>;
-        }
-        else {
-            let { props } = el as React.ReactElement;
-            let propsCn = (props?.className ?? '') + ' flex-grow-1 ';
-            elNew = React.cloneElement(el as React.ReactElement, { className: propsCn });
-        }
-        arr.splice(len - 2, 1, elNew);
-    }
-    */
     return <div className={'d-flex ' + cn} onClick={onClick}>
         {arr.map((v, index) => <React.Fragment key={index}>{v}</React.Fragment>)}
     </div>;

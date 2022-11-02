@@ -1,16 +1,17 @@
 import React, { ReactNode, useContext, useState } from 'react';
+import { proxy, useSnapshot } from "valtio";
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import jwtDecode from 'jwt-decode';
 import { AppNav, useEffectOnce } from 'tonwa-com';
 import { Guest, LocalDb, NetProps, UqConfig, User, UserApi } from 'tonwa-uq';
-import { createUQsMan, Net, Hosts, UqUnit, Uq, UserUnit } from "tonwa-uq";
+import { createUQsMan, Net, Hosts, UqUnit, Uq, UserUnit, UQsMan } from "tonwa-uq";
 import { env, LocalData } from 'tonwa-com';
-import { proxy, useSnapshot } from 'valtio';
 import { Spinner } from 'tonwa-com';
 import { AppNavContext } from 'tonwa-com';
 import { StackContainer } from 'tonwa-com';
 import { uqsProxy } from './uq-old';
-import jwtDecode from 'jwt-decode';
 import { AutoRefresh } from './AutoRefresh';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 export interface AppConfig { //extends UqsConfig {
     center: string;
@@ -23,21 +24,32 @@ export interface AppConfig { //extends UqsConfig {
     htmlTitle?: string;
 }
 
+export interface RoleName {
+    role?: string;
+    caption: string;
+    icon?: string;
+    color?: string;
+}
+
 let uqAppId = 1;
 export abstract class UqApp<U = any> {
     private readonly appConfig: AppConfig;
     private readonly uqConfigs: UqConfig[];
     private readonly uqsSchema: { [uq: string]: any; };
+    //private readonly stores: Store[];          // 用于在同一个模块中传递
     private localData: LocalData;
-    private uqRoleNames: { [key: string]: string };
+    private roleNames: { [key: string]: RoleName };
     readonly uqAppBaseId: number;
     readonly net: Net;
     readonly appNav: AppNav;
     readonly userApi: UserApi;
     readonly version: string;    // version in appConfig;
-    readonly responsive: {
-        user: User;
-    }
+    //readonly responsive: {
+    //    user: User;
+    //}
+    user: User;
+    uqsMan: UQsMan;
+    store: any;
     guest: number;
     uqs: U;
     uq: Uq;
@@ -49,9 +61,13 @@ export abstract class UqApp<U = any> {
         this.uqConfigs = uqConfigs;
         this.uqsSchema = uqsSchema;
         this.version = appConfig.version;
+        /*
         this.responsive = proxy({
             user: undefined,
         });
+        */
+        this.user = proxy({} as User);
+        // this.stores = [];
         let props: NetProps = {
             center: appConfig.center,
             debug: appConfig.debug,
@@ -76,7 +92,7 @@ export abstract class UqApp<U = any> {
         this.uqUnit.logoutUnit();
     }
     get userUnit() { return this.uqUnit.userUnit; }
-    get me() { return this.responsive.user?.id; }
+    // get me() { return this.user.read().user.read() return this.responsive.user?.id; }
     hasRole(role: string[] | string): boolean {
         if (this.uqUnit === undefined) return false;
         return this.uqUnit.hasRole(role);
@@ -84,7 +100,8 @@ export abstract class UqApp<U = any> {
 
     async logined(user: User) {
         this.net.logoutApis();
-        this.responsive.user = user;
+        //this.responsive.user = user;
+        Object.assign(this.user, user); // = proxy(user);
         let autoLoader: Promise<any> = undefined;
         let autoRefresh = new AutoRefresh(this, autoLoader);
         if (user) {
@@ -93,7 +110,7 @@ export abstract class UqApp<U = any> {
 
             if (this.uq !== undefined) {
                 this.uqUnit = new UqUnit(this.uq as any);
-                await this.uqUnit.loadMyRoles()
+                await this.uqUnit.loadMyRoles();
                 autoRefresh.start();
             }
             this.appNav.onLogined(true);
@@ -109,9 +126,8 @@ export abstract class UqApp<U = any> {
 
     async setUserProp(propName: string, value: any) {
         await this.userApi.userSetProp(propName, value);
-        let { user } = this.responsive;
-        (user as any)[propName] = value;
-        this.localData.user.set(user);
+        (this.user as any)[propName] = value;
+        this.localData.user.set(this.user);
     }
 
     saveLocalData() {
@@ -126,12 +142,11 @@ export abstract class UqApp<U = any> {
     async load(): Promise<void> {
         if (this.initCalled === true) return;
         this.initCalled = true;
-        //if (this.responsive.user?.id === this.uqsUserId) return;
         await this.net.init();
         try {
             let uqsMan = await createUQsMan(this.net, this.appConfig.version, this.uqConfigs, this.uqsSchema);
+            this.uqsMan = uqsMan;
             this.uqs = uqsProxy(uqsMan) as U;
-            //await this.onInited();
 
             if (this.uqs) {
                 this.uq = this.defaultUq;
@@ -151,26 +166,31 @@ export abstract class UqApp<U = any> {
                 this.net.setCenterToken(0, guest.token);
                 this.localData.guest.set(guest);
             }
+            await this.onLoaded();
         }
         catch (error) {
             console.error(error);
         }
     }
 
+    protected onLoaded(): Promise<void> {
+        return;
+    }
+
     private buildRoleNames() {
         if (this.uq === undefined) return;
         let defaultUqRoleNames = this.defaultUqRoleNames;
         if (defaultUqRoleNames !== undefined) {
-            this.uqRoleNames = defaultUqRoleNames[env.lang];
-            if (this.uqRoleNames === undefined) {
-                this.uqRoleNames = defaultUqRoleNames['$'];
+            this.roleNames = defaultUqRoleNames[env.lang];
+            if (this.roleNames === undefined) {
+                this.roleNames = defaultUqRoleNames['$'];
             }
         }
-        if (this.uqRoleNames === undefined) this.uqRoleNames = {};
+        if (this.roleNames === undefined) this.roleNames = {};
     }
 
-    roleName(role: string): string {
-        return this.uqRoleNames[role] ?? role;
+    roleName(role: string): RoleName {
+        return this.roleNames[role];
     }
 }
 
@@ -187,15 +207,23 @@ class LocalStorageDb extends LocalDb {
 }
 
 export const UqAppContext = React.createContext(undefined);
-export function useUqApp<U, T extends UqApp<U> = UqApp<U>>() {
-    return useContext<T>(UqAppContext);
+export function useUqAppBase() {
+    return useContext<UqApp>(UqAppContext);
 }
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            suspense: true,
+        },
+    },
+});
+
 export function UqAppView({ uqApp, children }: { uqApp: UqApp; children: ReactNode; }) {
-    let { appNav, responsive } = uqApp;
+    let { appNav/*, responsive*/ } = uqApp;
     let [appInited, setAppInited] = useState<boolean>(false);
     let { stack } = useSnapshot(appNav.data);
-    let { user } = useSnapshot(responsive);
+    let user = useSnapshot(uqApp.user);
     useEffectOnce(() => {
         (async function () {
             await uqApp.load();
@@ -221,8 +249,10 @@ export function UqAppView({ uqApp, children }: { uqApp: UqApp; children: ReactNo
     }
     return <UqAppContext.Provider value={uqApp}>
         <AppNavContext.Provider value={appNav}>
-            <StackContainer stackItems={stack} />
-            {user !== undefined}
+            <QueryClientProvider client={queryClient}>
+                <StackContainer stackItems={stack} />
+                {user !== undefined}
+            </QueryClientProvider>
         </AppNavContext.Provider>
     </UqAppContext.Provider>;
 }

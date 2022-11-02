@@ -1,9 +1,9 @@
 import { Page, useNav } from "tonwa-com";
-import { useUqApp } from "../UqApp";
+import { useUqAppBase } from "../UqApp";
 
 export function Logout({ onLogout, resetAll }: { onLogout: () => Promise<void>; resetAll: () => void; }) {
     let nav = useNav();
-    let uqApp = useUqApp();
+    let uqApp = useUqAppBase();
     // let header = this.isWebNav === true ? false : '安全退出';
     async function onClickLogout() {
         await uqApp.logined(undefined);

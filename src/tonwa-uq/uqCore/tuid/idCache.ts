@@ -126,7 +126,7 @@ export class IdCache {
         let localedValues = tuidValues.filter(v => {
             let p = v.indexOf('\t');
             if (p < 0) p = v.length;
-            let id = Number(v.substr(0, p));
+            let id = Number(v.substring(0, p));
             let val = this.localArr.getItem(id);
             return (val !== undefined);
         });
@@ -187,7 +187,7 @@ export class IdCache {
             if (!row) continue;
             let p = row.indexOf('\t');
             if (p < 0) p = row.length;
-            let id = Number(row.substr(0, p));
+            let id = Number(row.substring(0, p));
             let pos = netIds.findIndex(v => v === id);
             if (pos >= 0) netIds.splice(pos, 1);
             ret.push(row);

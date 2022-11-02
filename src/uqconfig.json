@@ -3,13 +3,17 @@
         "bz": {
             "name": "bizdev",
             "alias": "bz"
+        },
+        "jk": {
+            "name": "百灵威系统工程部",
+            "alias": "jk"
         }
     },
     "uqs": [
         {
-            "dev": "bz",
-            "name": "ushop",
-            "alias": "UShop"
+            "dev": "jk",
+            "name": "me",
+            "alias": "Me"
         }
     ]
 }

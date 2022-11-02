@@ -33,6 +33,7 @@ export class LocalCache {
             let text = this.local.getItem(this.key);
             if (text === null) return;
             if (text === undefined) return undefined;
+            if (text === 'undefined') return undefined;
             //return this.value = 
             return JSON.parse(text);
         }

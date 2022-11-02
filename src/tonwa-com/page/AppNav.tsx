@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigateFunction, NavigateOptions, To } from "react-router-dom";
 import { proxy, ref } from "valtio";
-import { StackItem, StackNav, TabItem } from "./nav";
+import { Nav, StackItem, StackNav, TabItem } from "./nav";
 
 interface ErrorInPage {
     err: string; // name unique
@@ -44,6 +44,10 @@ export class AppNav extends StackNav<StackItem> {
     }
     setError(err: string, message: string) { this.response.error = ref({ err, message }) }
     clearError() { this.response.error = undefined; }
+
+    createNav = (): Nav => {
+        return new Nav(this, this.tabNav);
+    }
 }
 
 export class TabNav extends StackNav<TabItem> {

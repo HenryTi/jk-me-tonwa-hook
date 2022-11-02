@@ -1,4 +1,5 @@
-import { FA, LMR } from "tonwa-com";
+import { ReactNode } from "react";
+import { FA, LMR, useNav } from "tonwa-com";
 
 interface IconCommandProps {
     caption: string;
@@ -14,4 +15,12 @@ export function IconCommand({ caption, icon, iconClass, onClick }: IconCommandPr
         {caption}
         <FA name="angle-right" />
     </LMR>;
+}
+
+export function Command({ page, children }: { page: JSX.Element; children: ReactNode; }) {
+    let nav = useNav();
+    function onClick() {
+        nav.open(page);
+    }
+    return <span onClick={onClick}>{children}</span>;
 }

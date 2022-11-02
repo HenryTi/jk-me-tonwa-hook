@@ -5,7 +5,7 @@ import { Verify } from './Verify';
 import { Pass } from './Pass';
 import { ForgetPassword, RegisterPassword } from './Password';
 import { Login } from '../Login';
-import { useUqApp } from '../../UqApp';
+import { useUqAppBase } from '../../UqApp';
 import { BandString } from 'tonwa-com';
 import { Band, BandContainerContext } from 'tonwa-com';
 import { Form, FormBandTemplate1, Submit } from 'tonwa-com';
@@ -25,7 +25,7 @@ interface Props extends StartProps {
 
 function RegisterPageBase({ header, accountLable, privacy, loginTop, Password, accountError, sendVerifyOem }: Props) {
     let nav = useNav();
-    let { userApi } = useUqApp();
+    let { userApi } = useUqAppBase();
     let { current: pass } = useRef({} as Pass);
     async function onValuesChanged({ name, value }: { name: string; value: any; }, context: BandContainerContext<any>) {
         let field = context.fields['submit'];

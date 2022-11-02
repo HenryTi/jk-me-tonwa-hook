@@ -1,4 +1,6 @@
-import React, { ReactElement, useContext, useRef, useState } from "react";
+import React, { ReactElement, Suspense, useContext, useRef, useState } from "react";
+import { Spinner } from "tonwa-com/coms";
+import { useNav } from "./nav";
 import { ScrollContext, useScroll } from "./useScroll";
 
 interface TabObject {
@@ -7,6 +9,7 @@ interface TabObject {
     tag: string | JSX.Element;
     content: JSX.Element;
     mountable: boolean;         // 只有在点击tab之后，才初始化
+    store?: any;
 }
 
 interface TabProps {
@@ -50,8 +53,11 @@ export function PageTabs({ children }: { children: React.ReactNode; }) {
 }
 
 function InnerPageTabs({ tabs }: { tabs: TabObject[]; }) {
+    let nav = useNav();
     let scrollContext = useContext(ScrollContext);
     let [active, setActive] = useState(0);
+    let activeTab = tabs[active];
+    nav.setPageTab(activeTab);
     tabs[active].mountable = true;
     function onTabClick(tabIndex: number) {
         if (tabIndex === active) return;
@@ -59,6 +65,7 @@ function InnerPageTabs({ tabs }: { tabs: TabObject[]; }) {
         if (!tab) return;
         tab.mountable = true;
         setActive(tabIndex);
+        nav.setPageTab(tab);
     }
     scrollContext = scrollContext ?? 'page-tabs';
     let overflowY: any;
@@ -90,9 +97,11 @@ function TabPane({ tab, active, index }: { tab: TabObject; active: number; index
     let divRef = useScroll();
     let { mountable, content } = tab;
     if (mountable === false) return null;
-    return <div ref={divRef} className={'tab-pane ' + (active === index ? 'active' : '')}>
-        {content}
-    </div>
+    return <Suspense fallback={<Spinner className="m-5 text-info" />}>
+        <div ref={divRef} className={'tab-pane ' + (active === index ? 'active' : '')}>
+            {content}
+        </div>
+    </Suspense>;
 }
 
 function invariant(condition: boolean, message: string): asserts condition {

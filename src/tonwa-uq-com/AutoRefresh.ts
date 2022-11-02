@@ -1,4 +1,3 @@
-import { Uq } from "tonwa-uq";
 import { UqApp } from "./UqApp";
 
 const gaps = [10, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 10, 10, 10, 10, 15, 15, 15, 30, 30, 60];

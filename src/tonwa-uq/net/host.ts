@@ -109,7 +109,7 @@ export async function buildDebugHosts(center: string, debugHosts: Hosts): Promis
         uq = undefined;
     }
     if (results[2] === true) {
-        res = `http://${res}/`;
+        res = undefined; // 直接指向目的服务器 `http://${res}/`;
     }
     else {
         res = undefined;

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useState } from "react";
 import { useNav, Spinner, useEffectOnce } from "tonwa-com";
 import { AdminPage } from "./AdminPage";
 

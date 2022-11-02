@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useUqApp } from '../UqApp';
+import { useUqAppBase } from '../UqApp';
 //import { tonwa } from "tonwa-core";
 //import { nav } from '../nav';
 
@@ -12,7 +12,7 @@ export interface ImageProps {
 
 // src = .src, 表示fontawesome Icon
 export function Image(props: ImageProps) {
-    let app = useUqApp();
+    let app = useUqAppBase();
     let { className, style, src, altImage } = props;
     let icon: string;
     if (src) {

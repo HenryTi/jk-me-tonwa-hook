@@ -1,10 +1,10 @@
-import { TabHome } from "./Home";
-import { IDsPage } from "./IDs";
-import { ActsPage } from "./Acts";
+// import { TabHome } from "./Home";
+// import { IDsPage } from "./IDs";
+//import { ActsPage } from "./Acts";
+import { TabHome, TabSupervise } from './Tabs';
 import { Page, PageTabs, Tab, FA, useT } from "tonwa-com";
 import { appT } from "./res";
-import { MeLink } from "./Me";
-import { PageShops } from "./Shop";
+import { MeLink } from "./Tabs";
 
 export function MainPage() {
     let t = useT(appT);
@@ -15,15 +15,12 @@ export function MainPage() {
         </div>;
     }
     return <PageTabs>
-        <Tab name="home" tag={<TabTag caption={t('dev')} icon="wrench" />}>
+        <Tab name="home" tag={<TabTag caption={t('home')} icon="wrench" />}>
             <TabHome />
         </Tab>
-        <Tab name="acts" tag={<TabTag caption={t('home')} icon="home" />}>
-            <ActsPage />
+        <Tab name="supervise" tag={<TabTag caption={t('supervise')} icon="wrench" />}>
+            <TabSupervise />
         </Tab>
-        <Tab name="shop" tag={<TabTag caption={t('shop')} icon="file-text-o" />}>
-            <PageShops />
-        </Tab >
         <Tab name="t2" tag={<TabTag caption={t('me')} icon="circle-o" />}>
             <Page header={t('me')}>
                 <MeLink />

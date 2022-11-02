@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ButtonAsync, MutedSmall, Page, SearchBox, useNav, wait } from "tonwa-com";
 import { FA } from "tonwa-com";
 import { User } from "tonwa-uq";
-import { useUqApp } from "../UqApp";
+import { useUqAppBase } from "../UqApp";
 import { Image } from "./Image";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 }
 export function SelectUser({ header, top }: Props) {
     let nav = useNav();
-    let app = useUqApp();
+    let app = useUqAppBase();
     let [user, setUser] = useState<User>(null);
     let onSearch = async (key: string) => {
         let retUser = await app.userApi.userFromName(key);

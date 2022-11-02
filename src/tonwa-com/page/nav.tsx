@@ -7,7 +7,10 @@ import { UPage } from "./Page";
 export interface StackItem {
     key: string;
     page: JSX.Element;
+    store?: any;
+    tab?: any;
     onClose?: () => boolean;
+    nav?: any;
 }
 
 export interface TabItem extends StackItem {
@@ -29,21 +32,63 @@ export class StackNav<T extends StackItem> {
         });
     }
 
+    setPageStore(store: any) {
+        if (this.stackLen > 0) {
+            let page = this.data.stack[this.stackLen - 1];
+            let { tab } = page;
+            if (tab) {
+                tab.store = store;
+            }
+            else {
+                page.store = store;
+            }
+        }
+    }
+
+    setPageTab(tab: any) {
+        if (this.stackLen > 0) {
+            this.data.stack[this.stackLen - 1].tab = tab;
+        }
+    }
+
+    getPageTopStore(): any {
+        if (this.stackLen > 0) {
+            let { stack } = this.data;
+            let page = stack[this.stackLen - 1];
+            let { tab } = page;
+            if (tab) {
+                return tab.store;
+            }
+            else {
+                return page.store;
+            }
+        }
+    }
+
+    getPageStore(): any {
+        let { stack } = this.data;
+        for (let i = this.stackLen - 1; i >= 0; i--) {
+            let { store, tab } = stack[i];
+            if (tab) return tab.store;
+            if (store !== undefined) return store;
+        }
+    }
+
     open(page: JSX.Element | (() => Promise<JSX.Element>), onClose?: () => boolean): void {
         if (typeof (page) === 'function') {
             let promise: Promise<JSX.Element> = page();
             let isWaiting = false;
             setTimeout(() => {
                 if (isWaiting === undefined) return;
-                this.open(<Waiting />);
+                this.internalOpen(<Waiting />);
                 isWaiting = true;
             }, 100);
-            promise.then(async (pg) => {
+            promise.then(pg => {
                 if (isWaiting === true) {
                     this.close();
                 }
                 isWaiting = undefined;
-                this.open(pg, onClose);
+                this.internalOpen(pg, onClose);
                 return;
             });
             return;
@@ -122,20 +167,26 @@ export function Waiting() {
 }
 
 export class Nav extends StackNav<StackItem> {
+    private static seed = 1;
+    private initPage: React.ReactNode;
     readonly appNav: AppNav;
     readonly tabNav: TabNav;
+    readonly id: number;
 
-    constructor(appNav: AppNav, tabNav: TabNav, initPage: React.ReactNode) {
+    constructor(appNav: AppNav, tabNav: TabNav) {
         super();
         this.appNav = appNav;
         this.tabNav = tabNav;
+        this.id = Nav.seed++;
+    }
+
+    setInitPage(initPage: React.ReactNode) {
+        if (!initPage) return;
+        if (this.initPage) return;
+        this.initPage = initPage;
         this.internalOpen(initPage as JSX.Element);
     }
-    /*
-        navigate(to: To, options?: NavigateOptions) {
-            this.appNav.navigate(to, options);
-        }
-    */
+
     openTab(tabItem: TabItem) {
         this.tabNav.openTab(tabItem);
     }

@@ -27,19 +27,24 @@ export interface UnitRoles {
     usersOfRole: { [role: string]: UserUnit[] };
 }
 
+export enum EnumSysRole {
+    admin = 1,
+    owner = 2,
+}
+
 export class UqUnit {
     private readonly uqMan: UqMan;
     private myUnitsColl: { [unit: number]: UserUnit };
+    private userUnit0: UserUnit;        // the root uq unit = 0;
     myUnits: UserUnit[];
-    userUnit: UserUnit;       // current unit;
-    userUnit0: UserUnit;
+    userUnit: UserUnit;         // current unit;
 
     constructor(uqMan: UqMan) {
         this.uqMan = uqMan;
     }
 
     loginUnit(userUnit: UserUnit) {
-        this.userUnit = userUnit;
+        this.userUnit = userUnit;   // 每次只允许一个unit展示
     }
 
     logoutUnit() {
@@ -50,6 +55,7 @@ export class UqUnit {
         if (this.userUnit === undefined) return false;
         let { roles, isAdmin } = this.userUnit;
         if (isAdmin === true) return true;
+        if (roles === undefined) return false;
         if (Array.isArray(role) === true) {
             let arr = role as string[];
             for (let item of arr) {
@@ -64,7 +70,6 @@ export class UqUnit {
     }
 
     async Poked(): Promise<boolean> {
-        //let query: Query = this.entities['$poked'] as any;
         let query: Query = this.uqMan.entities['$poked'] as any;
         let ret = await query.query({});
         let arr: { poke: number; }[] = ret.ret;
@@ -105,7 +110,8 @@ export class UqUnit {
             myUnit.entity = entity;
             myUnit.assigned = assigned;
             if (unit === 0) {
-                this.userUnit = this.userUnit0 = myUnit;
+                this.userUnit0 = myUnit;
+                if (this.userUnit === undefined) this.userUnit = myUnit;
             }
         }
         for (let roleRow of roles) {
@@ -126,14 +132,11 @@ export class UqUnit {
     }
 
     async loadUnitUsers(): Promise<UnitRoles> {
-        let unit = this.userUnit.unit
-        //let meOwner: boolean;
-        //let meAdmin: boolean;
         let owners: UserUnit[] = [];
         let admins: UserUnit[] = [];
         let coll: { [user: number]: UserUnit } = {};
         let query: Query = this.uqMan.entities['$role_unit_users'] as any;
-        let { users: userRows, roles: roleRows } = await query.query({ unit });
+        let { users: userRows, roles: roleRows } = await query.query({ unit: this.userUnit.unit });
         let users: UserUnit[] = [];
         for (let userRow of userRows) {
             let { user, admin } = userRow;
@@ -175,7 +178,7 @@ export class UqUnit {
         return { /*meOwner, meAdmin, */owners, admins, users, usersOfRole };
     }
 
-    async addAdmin(user: number, admin: 1 | 3, assigned: string) {
+    async addAdmin(user: number, admin: EnumSysRole, assigned: string) {
         let act: Action = this.uqMan.entities['$role_unit_add_admin'] as any;
         await act.submit({
             unit: this.userUnit.unitId,
@@ -213,7 +216,7 @@ export class UqUnit {
         });
     }
 
-    async delAdmin(user: number, admin: 1 | 2) {
+    async delAdmin(user: number, admin: EnumSysRole) {
         let act: Action = this.uqMan.entities['$role_unit_del_admin'] as any;
         await act.submit({
             unit: this.userUnit.unitId,

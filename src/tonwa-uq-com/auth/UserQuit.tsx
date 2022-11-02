@@ -1,5 +1,5 @@
 import { Page, useNav } from "tonwa-com";
-import { useUqApp } from "../UqApp";
+import { useUqAppBase } from "../UqApp";
 
 const waitingTime = '一小时';
 
@@ -84,7 +84,7 @@ export function UserQuit() {
 
 function QuitConfirm() {
     let nav = useNav();
-    let uqApp = useUqApp();
+    let uqApp = useUqAppBase();
     let note = <>
         账号注销后，如果在{waitingTime}内容重新登录账号，账号自动恢复。
         {waitingTime}之后，账号绑定手机、邮件等相关信息将被释放。账号无法将登录。<br />
@@ -103,7 +103,7 @@ function QuitConfirm() {
 }
 
 function QuitDone() {
-    let uqApp = useUqApp();
+    let uqApp = useUqAppBase();
     let note = <>
         账号将在{waitingTime}后彻底注销。<br />
         如果在{waitingTime}内容重新登录账号，注销操作自动取消。

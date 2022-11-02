@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from "react";
+import React, { Suspense, useContext, useMemo } from "react";
 import { useSnapshot } from "valtio";
-import { Nav, PageStackContext, StackItem, useAppNav, useTabNav } from "./nav";
+import { PageStackContext, StackItem, useAppNav } from "./nav";
 import { ScrollContext } from "./useScroll";
 
 export function StackContainer({ active, stackItems }: { active?: string; stackItems: readonly StackItem[] }) {
@@ -23,11 +23,12 @@ export function StackContainer({ active, stackItems }: { active?: string; stackI
 }
 
 function Stack({ display, children }: { display: boolean; children: React.ReactNode; }) {
-    let appNav = useAppNav();
-    let tabNav = useTabNav();
+    const appNav = useAppNav();
+    // const { tabNav } = appNav;
     let scrollContext = useContext(ScrollContext);
-    let nav = useRef(new Nav(appNav, tabNav, children));
-    let { data } = nav.current;
+    let nav = useMemo(() => appNav.createNav(), [appNav]);
+    nav.setInitPage(children);
+    let { data } = nav;
     let snapshot = useSnapshot(data);
     let { stack: snapshotStack } = snapshot;
     let len = snapshotStack.length;
@@ -39,14 +40,16 @@ function Stack({ display, children }: { display: boolean; children: React.ReactN
         case 'app-tabs': overflowY = 'auto'; break;
         case 'page-tabs': overflowY = 'scroll'; break;
     }
-    return <PageStackContext.Provider value={nav.current}>
+    return <PageStackContext.Provider value={nav}>
         {snapshotStack.map((v, index) => {
             let { key: pageKey, page } = v;
             return <div key={pageKey}
                 className={flexFill + (display === true && index === last ? 'd-flex' : 'd-none')}
                 style={{ overflowY }}
             >
-                {page}
+                <Suspense>
+                    {page}
+                </Suspense>
             </div>
         })}
     </PageStackContext.Provider>;
