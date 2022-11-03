@@ -36,9 +36,10 @@ export class StoreMyPeriodSum extends StorePeriodSum {
         let couponFeeRadio = await this.uqs.JkMe.GetCouponFeeRadio.query({ from, to });
         let topCouponFeeRadio = couponFeeRadio.ret.filter(e => e.radio > 0).sort((f, s) => s.radio - f.radio).slice(0, 5);
         for (let i = 0; i < topCouponFeeRadio.length; i++) {
-            let element: any = topCouponFeeRadio[i];
-            (topCouponFeeRadio[i] as any).employeeName = await this.uqApp.getEmployee(element.employee);
-            topCouponFeeRadio[i].radio = element.radio * 100;
+            let { employee, radio } = topCouponFeeRadio[i];
+            let ret = await this.uqs.JkHr.Employee.loadMain(employee);
+            (topCouponFeeRadio[i] as any).employeeName = ret?.name ?? 'employee undefined' //.uqApp.getEmployee();
+            topCouponFeeRadio[i].radio = radio * 100;
         }
         this.couponState.topCouponFeeRadio = topCouponFeeRadio;
     }

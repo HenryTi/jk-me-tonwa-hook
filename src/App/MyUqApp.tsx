@@ -65,17 +65,17 @@ export class MyUqApp extends UqApp<UQs> {
     state = proxy({
         refreshTime: Date.now() / 1000,
     });
-
-    private employees: any[] = [];
-    async getEmployee(id: number) {
-        if (this.employees[id] === undefined) {
-            //let e = await this.uqs.JkHr.Employee.load(id);
-            let e = { name: '职员 - JkHr.Employee' }
-            this.employees[id] = e.name;
+    /*
+        private employees: any[] = [];
+        async getEmployee(id: number) {
+            if (this.employees[id] === undefined) {
+                //let e = await this.uqs.JkHr.Employee.load(id);
+                let e = { name: '职员 - JkHr.Employee' }
+                this.employees[id] = e.name;
+            }
+            return this.employees[id];
         }
-        return this.employees[id];
-    }
-
+    */
     // 数据服务器提醒客户端刷新，下面代码重新调入的数据
     refresh = async () => {
         let d = Date.now() / 1000;

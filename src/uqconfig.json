@@ -14,6 +14,16 @@
             "dev": "jk",
             "name": "me",
             "alias": "Me"
+        },
+        {
+            "dev": "jk",
+            "name": "hr",
+            "alias": "Hr"
+        },
+        {
+            "dev": "jk",
+            "name": "product",
+            "alias": "Product"
         }
     ]
 }

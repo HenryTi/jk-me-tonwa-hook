@@ -63,7 +63,7 @@ export function VSupervise() {
         return <>
             <div className="mb-4">
                 <div className="my-2 mx-1 border border-info rounded">
-                    <div className="p-3 border-bottom border-info bg-white">
+                    <div className="p-3 border-bottom border-info bg-white rounded-top">
                         <b>公司业务</b>
                     </div>
                     <ViewSupervisePeriodSum />

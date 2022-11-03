@@ -6,8 +6,8 @@ import { StoreSupervise } from "./StoreSupervise";
 
 export function VAccounts() {
     const storeSupervise = usePageStore<StoreSupervise>();
-    const { uqApp, item } = storeSupervise;
-    const { accountTitles, postTitles, uqs } = uqApp;
+    const { uqApp } = storeSupervise;
+    const { accountTitles, postTitles } = uqApp;
 
     function ItemView({ value: row }: { value: ReturnGetAccountsRet }) {
         let { account, balance, objectType, objectTo } = row;
@@ -20,8 +20,7 @@ export function VAccounts() {
                 case EnumObjectType.post:
                     return <>{postTitles[objectTo as Post]?.title}</>;
                 case EnumObjectType.staff:
-                    return <ViewEmployee id={objectTo} />
-                //return Employee.tv(objectTo, renderEmployee);
+                    return <ViewEmployee id={objectTo} />;
             }
         }
         return <LMR className="px-3 py-2">

@@ -1,11 +1,10 @@
 import React from "react";
 import { FA, List, LMR, Page } from "tonwa-com";
 import { usePageStore } from "tonwa-uq-com";
-import { renderNum } from "App/tool";
+import { renderNum, ViewProduct } from "App/tool";
 import { ReturnGetProductSumByMonthRet } from "uqs/JkMe";
 import { useSnapshot } from "valtio";
 import { StoreSupervise } from "./StoreSupervise";
-import { useUqApp } from "App/MyUqApp";
 
 interface Props {
     renderId: (id: number) => JSX.Element;
@@ -54,12 +53,7 @@ function VSumByMonth({ renderId }: Props) {
 }
 
 export function VProductSumByMonth() {
-    const { uqs } = useUqApp();
-    function renderId(id: number) {
-        return <span>product id: {id}</span>;
-        // return uqs.JkProduct.ProductX.tv(id);
-    }
-    return <VSumByMonth renderId={renderId} />;
+    return <VSumByMonth renderId={id => <ViewProduct id={id} />} />;
 }
 
 export function VCustomerSumByMonth() {

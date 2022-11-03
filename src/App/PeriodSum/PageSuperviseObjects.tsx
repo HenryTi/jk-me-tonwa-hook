@@ -6,8 +6,8 @@ import { usePageStore } from "tonwa-uq-com";
 
 export function PageSuperviseObjects() {
     const store = usePageStore<StorePeriodSum>();
-    const { uqApp, itemPeriodSum, periodHistoryLastYear, superviseObjects, state } = store;
-    const { itemTitles, postTitles, timezone, uqs } = uqApp;
+    const { uqApp, itemPeriodSum, superviseObjects } = store;
+    const { itemTitles, postTitles } = uqApp;
     const { item } = itemPeriodSum;
     let {/*title, vice, */unit, fixed } = itemTitles[item as Item];
 
@@ -26,12 +26,11 @@ export function PageSuperviseObjects() {
     </Page>;
 
     function ItemView({ value: row }: { value: ReturnGetSuperviseObjectsRet }) {
-        let { opi, item, post, object, staff, value, ratioValue } = row;
+        let { staff, ratioValue } = row;
         return <div className="px-3 py-2 d-block">
             <LMR>
                 <div>
                     <span className="text-muted small">来自: </span>
-                    {/*uqs.JkHr.Employee.tv(staff, renderEmployee)*/}
                     <ViewEmployee id={staff} />
                     <span>职员: {staff}</span>
                 </div>

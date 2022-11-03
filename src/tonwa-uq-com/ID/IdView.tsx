@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useEffectOnce } from "tonwa-com";
 import { Uq } from "tonwa-uq";
 import { ID, UqID } from "tonwa-uq";
 
@@ -20,13 +21,13 @@ export function IdView({ id, uq, Template, ID }: Props) {
 
 function IdViewInternal({ id, uq, Template }: Props) {
     let [value, setValue] = useState<any>(undefined);
-    useEffect(() => {
+    useEffectOnce(() => {
         async function getValue() {
             let obj = await uq.idObj(id); //.ID({ id, IDX: undefined }); cache[id];
             setValue(obj);
         }
         getValue();
-    }, [id, uq]);
+    });
     if (value === null || value === undefined) return null;
     return <Template value={value} />;
 }
@@ -42,7 +43,7 @@ const caches: { [IDType: string]: IDCache } = {};
 
 function IdViewID<T extends { id?: number; }>({ id, ID, Template }: Props<T>) {
     let [value, setValue] = useState<T>(undefined);
-    useEffect(() => {
+    useEffectOnce(() => {
         async function getValue() {
             let IDName = ID.name;
             let idCache = caches[IDName];
@@ -80,7 +81,7 @@ function IdViewID<T extends { id?: number; }>({ id, ID, Template }: Props<T>) {
             setValue(val);
         }
         getValue();
-    }, [id, ID]);
+    });
     if (!value) return null;
     return <Template value={value ?? ({ id: undefined } as T)} />;
 }

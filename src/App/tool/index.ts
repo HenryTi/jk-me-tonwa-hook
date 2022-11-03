@@ -4,3 +4,4 @@ export * from './LinkFace';
 export * from './None';
 export * from './parts';
 export * from './ViewEmployee';
+export * from './ViewProduct';
