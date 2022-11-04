@@ -118,43 +118,44 @@ function PageStaffs() {
         };
     });
     const { sum, list } = data;
-
     function ItemView({ value: v }: { value: StaffRow; }): JSX.Element {
         let { staff, monthValuesArr } = v;
-        let right = <div className="d-block">
-            {monthValuesArr.map((v, index) => {
-                let { item, dThis, mThis, mLast } = v;
-                if (mThis === undefined && mLast === undefined) return null;
-                let { title } = itemTitles[item];
-                return <div key={index} className="d-flex">
-                    <div className="flex-fill text-sm-end small text-muted">{title}</div>
-                    <div className="d-sm-flex">
-                        <div className="d-flex d-sm-block">
-                            <div className="flex-fill small text-muted d-sm-none">今日</div>
-                            <div>{vValue(dThis)}</div>
-                        </div>
-                        <div className="d-flex d-sm-block">
-                            <div className="flex-fill small text-muted d-sm-none">本月</div>
-                            <div>{vValue(mThis)}</div>
-                        </div>
-                        <div className="d-flex d-sm-block">
-                            <div className="flex-fill small text-muted d-sm-none">上月</div>
-                            <div>{vValue(mLast)}</div>
-                        </div>
+        if (monthValuesArr.length === 0) return null;
+        let vItems = monthValuesArr.map((v, index) => {
+            let { item, dThis, mThis, mLast } = v;
+            if (mThis === undefined && mLast === undefined) return null;
+            let { title } = itemTitles[item];
+            return <div key={index} className="d-flex">
+                <div className="flex-fill text-sm-end small text-muted">{title}</div>
+                <div className="d-sm-flex">
+                    <div className="d-flex d-sm-block">
+                        <div className="flex-fill small text-muted d-sm-none">今日</div>
+                        <div>{vValue(dThis)}</div>
+                    </div>
+                    <div className="d-flex d-sm-block">
+                        <div className="flex-fill small text-muted d-sm-none">本月</div>
+                        <div>{vValue(mThis)}</div>
+                    </div>
+                    <div className="d-flex d-sm-block">
+                        <div className="flex-fill small text-muted d-sm-none">上月</div>
+                        <div>{vValue(mLast)}</div>
                     </div>
                 </div>
-            })}
-        </div>;
+            </div>
+        }).filter(v => v);
+        if (vItems.length === 0) return null;
         return <div className="px-3 py-2 d-block d-sm-flex">
             <div className="flex-fill">
                 <ViewEmployee id={staff} />
             </div>
-            {right}
+            <div className="d-block">
+                {vItems}
+            </div>
         </div>;
     }
 
     function ListFooter(): JSX.Element {
-        return <div className="px-3 py-3 d-block d-sm-flex">
+        return <div className="px-3 py-3 d-block d-sm-flex border-top border-bottom tonwa-bg-gray-2">
             <div className="flex-fill fw-bold text-sm-end small text-muted me-3">合计</div>
             <div>
                 {sum.map((v, index) => {

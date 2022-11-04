@@ -9,22 +9,23 @@ export function VAccounts() {
     const { uqApp } = storeSupervise;
     const { accountTitles, postTitles } = uqApp;
 
-    function ItemView({ value: row }: { value: ReturnGetAccountsRet }) {
-        let { account, balance, objectType, objectTo } = row;
+    function ItemView({ value }: { value: ReturnGetAccountsRet }) {
+        let { account, balance, objectType, objectTo } = value;
         let { title: accountTitle, unit, fixed } = accountTitles[account as EnumAccount];
-        //let { JkHr } = uqs;
-        //let { Employee } = JkHr;
-        const renderObject = () => {
-            switch (Number(objectType) as EnumObjectType) {
-                default: return <>{objectType} {objectTo}</>;
-                case EnumObjectType.post:
-                    return <>{postTitles[objectTo as Post]?.title}</>;
-                case EnumObjectType.staff:
-                    return <ViewEmployee id={objectTo} />;
-            }
+        let vObject: JSX.Element;
+        switch (Number(objectType) as EnumObjectType) {
+            default:
+                vObject = <>{objectType} {objectTo}</>;
+                break;
+            case EnumObjectType.post:
+                vObject = <>{postTitles[objectTo as Post]?.title}</>;
+                break;
+            case EnumObjectType.staff:
+                vObject = <ViewEmployee id={objectTo} />;
+                break;
         }
         return <LMR className="px-3 py-2">
-            {renderObject()} {accountTitle}
+            {vObject} {accountTitle}
             <div>
                 <span>{balance.toFixed(fixed ?? 2)}</span>
                 <small className="ms-1 text-muted">{unit}</small>

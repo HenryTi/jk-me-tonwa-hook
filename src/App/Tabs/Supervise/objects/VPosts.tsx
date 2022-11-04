@@ -23,8 +23,8 @@ function PagePosts() {
         return ret.ret;
     });
 
-    function ItemView(v: any): JSX.Element {
-        let { post, item, amountThisMonth, amountLastMonth } = v;
+    function ItemView({ value }: { value: any; }): JSX.Element {
+        let { post, item, amountThisMonth, amountLastMonth } = value;
         let { title: postTitle } = postTitles[post as Post];
         let { title: itemTitle } = itemTitles[item as Item];
         return <LMR className="px-3 py-2">
@@ -47,7 +47,7 @@ function PagePosts() {
     function onClickRow(v: any) {
         alert(v.id);
     }
-    return <Page>
+    return <Page header={caption}>
         <div className="d-flex px-3 py-3 border-bottom border-primary">
             <div className="flex-fill"></div>
             <div className={cnAmount}>本月</div>

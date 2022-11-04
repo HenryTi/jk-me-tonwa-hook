@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 
 export function ViewProduct({ id }: { id: number; }): JSX.Element {
     const { uqs } = useUqApp();
-    const { data } = useQuery(['product'], async () => {
+    const { data } = useQuery(['product', id], async () => {
         let ret = await uqs.JkProduct.ProductX.loadMain(id);
         return ret;
     });

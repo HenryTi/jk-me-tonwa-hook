@@ -139,7 +139,7 @@ export class StoreSupervise extends StorePeriodSum {
 
     showAccounts = async () => {
         let ret = await this.uqs.JkMe.GetAccounts.query({});
-        this.accounts = ret.ret;
+        this.accounts = ret.ret.filter(v => v.objectTo);
         this.nav.open(<VAccounts />);
     }
 
